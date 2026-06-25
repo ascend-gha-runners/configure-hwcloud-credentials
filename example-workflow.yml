@@ -1,0 +1,42 @@
+name: Example using Huawei Cloud Credentials
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  id-token: write   # Required for OIDC
+  contents: read
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Huawei Cloud Credentials
+        id: creds
+        uses: ./   # Use local action in this repository
+        with:
+          region: ap-southeast-1
+          audience: audience
+          idp-id: github-
+          duration-seconds: 900
+
+      - name: Display success status
+        run: |
+          echo "Credentials obtained: ${{ steps.creds.outputs.success }}"
+          echo "AWS_ACCESS_KEY_ID is set: ${{ env.AWS_ACCESS_KEY_ID != '' }}"
+
+      - name: List OBS buckets (if credentials available)
+        if: steps.creds.outputs.success == 'true'
+        run: |
+          # Example using AWS CLI with Huawei Cloud OBS endpoint
+          aws s3 ls --endpoint-url https://obs.ap-southeast-1.myhuaweicloud.com
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ env.AWS_SESSION_TOKEN }}
