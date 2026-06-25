@@ -1,0 +1,37 @@
+name: 'Configure Huawei Cloud Credentials'
+description: 'Configure Huawei Cloud OBS credentials using GitHub OIDC'
+author: 'Your Name'
+inputs:
+  region:
+    description: 'Huawei Cloud region (e.g., ap-southeast-1)'
+    required: true
+  audience:
+    description: 'Audience for OIDC token (must match client ID configured in Huawei Cloud IdP)'
+    required: false
+    default: 'audience'
+  idp-id:
+    description: 'Identity provider ID configured in Huawei Cloud IAM'
+    required: false
+    default: 'github-'
+  duration-seconds:
+    description: 'Duration of temporary credentials in seconds'
+    required: false
+    default: '900'
+
+outputs:
+  aws-access-key-id:
+    description: 'Temporary access key ID'
+  aws-secret-access-key:
+    description: 'Temporary secret access key'
+  aws-session-token:
+    description: 'Temporary session token'
+  success:
+    description: 'Whether credentials were successfully obtained'
+
+runs:
+  using: 'node20'  # Uses Node.js 20.x runtime (latest patch version)
+  main: 'dist/index.js'
+
+branding:
+  icon: 'key'
+  color: 'blue'
